@@ -1,6 +1,11 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
+const dns = require("dns");
+dns.setDefaultResultOrder("ipv4first");
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const { connectDB } = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -8,7 +13,6 @@ const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
 const billRoutes = require("./routes/billRoutes");
 
-dotenv.config();
 const app = express();
 const server = require("http").createServer(app);
 const allowedOrigins = [
