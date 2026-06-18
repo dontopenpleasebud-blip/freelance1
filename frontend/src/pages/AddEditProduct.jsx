@@ -418,6 +418,22 @@ const AddEditProduct = () => {
                   <img
                     src={preview}
                     alt="preview"
+                    onError={(e) => {
+                      const categoryImageMap = {
+                        "Milk": "Milk.jpg",
+                        "Cheese": "Cheese.jpg",
+                        "Butter": "Butter.jpg",
+                        "Yogurt": "Curd.jpg",
+                        "Ghee": "Ghee.jpg",
+                        "Paneer": "Paneer.jpg",
+                        "Cream": "Cream.jpg",
+                        "Lassi": "Lassi.jpg",
+                        "Flavoured Milk": "Flavoured-Milk.jpg",
+                        "Ice Cream": "Ice-Cream.jpg"
+                      };
+                      const filename = categoryImageMap[formData.category] || "Logo.jpg";
+                      e.target.src = `${import.meta.env.VITE_BACKEND_URI}/uploads/defaults/${filename}`;
+                    }}
                     style={{
                       width: "120px",
                       height: "120px",

@@ -17,6 +17,7 @@ const server = require("http").createServer(app);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost",
+"http://20.2.139.220",
   process.env.CORS_ORIGIN,
 ];
 

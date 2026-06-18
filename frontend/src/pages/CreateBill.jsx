@@ -52,6 +52,43 @@ const CreateBill = () => {
     "Ice Cream",
   ];
 
+  const getProductImageUrl = (product) => {
+    if (product && product.image && product.image.trim() !== "") {
+      return `${import.meta.env.VITE_BACKEND_URI}${product.image}`;
+    }
+    const categoryImageMap = {
+      "Milk": "Milk.jpg",
+      "Cheese": "Cheese.jpg",
+      "Butter": "Butter.jpg",
+      "Yogurt": "Curd.jpg",
+      "Ghee": "Ghee.jpg",
+      "Paneer": "Paneer.jpg",
+      "Cream": "Cream.jpg",
+      "Lassi": "Lassi.jpg",
+      "Flavoured Milk": "Flavoured-Milk.jpg",
+      "Ice Cream": "Ice-Cream.jpg"
+    };
+    const filename = categoryImageMap[product.category] || "Logo.jpg";
+    return `${import.meta.env.VITE_BACKEND_URI}/uploads/defaults/${filename}`;
+  };
+
+  const handleImageError = (e, category) => {
+    const categoryImageMap = {
+      "Milk": "Milk.jpg",
+      "Cheese": "Cheese.jpg",
+      "Butter": "Butter.jpg",
+      "Yogurt": "Curd.jpg",
+      "Ghee": "Ghee.jpg",
+      "Paneer": "Paneer.jpg",
+      "Cream": "Cream.jpg",
+      "Lassi": "Lassi.jpg",
+      "Flavoured Milk": "Flavoured-Milk.jpg",
+      "Ice Cream": "Ice-Cream.jpg"
+    };
+    const filename = categoryImageMap[category] || "Logo.jpg";
+    e.target.src = `${import.meta.env.VITE_BACKEND_URI}/uploads/defaults/${filename}`;
+  };
+
   // Fetch product catalog
   const loadCatalog = useCallback(async () => {
     setLoadingCatalog(true);
@@ -124,10 +161,13 @@ const CreateBill = () => {
 
   const handleGenerateBill = async () => {
     // Validation
-    if (customerNumber.length !== 10 || !/^\d{10}$/.test(customerNumber)) {
-      showWarning("Customer phone number must be exactly 10 digits");
-      return;
-    }
+    if (
+  customerNumber &&
+  (customerNumber.length !== 10 || !/^\d{10}$/.test(customerNumber))
+) {
+  showWarning("Customer phone number must be exactly 10 digits");
+  return;
+}
     if (cart.length === 0) {
       showWarning("Your cart is empty. Add products to create a bill.");
       return;
@@ -322,11 +362,9 @@ const CreateBill = () => {
                     }}
                   >
                     <img
-                      src={`${import.meta.env.VITE_BACKEND_URI}${product.image}`}
+                      src={getProductImageUrl(product)}
                       alt={product.name}
-                      onError={(e) => {
-                        e.target.src = `${import.meta.env.VITE_BACKEND_URI}/uploads/defaults/logo.jpg`;
-                      }}
+                      onError={(e) => handleImageError(e, product.category)}
                       className="catalog-product-image"
                       style={{
                         height: "100%",
