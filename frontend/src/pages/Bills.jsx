@@ -55,6 +55,27 @@ const Bills = () => {
   const [page, setPage] = useState(1);
   const limit = 10; // items per page
 
+  // Selected target date string for matching and title rendering
+  const targetDateStr = useMemo(() => {
+    if (filterDate) {
+      const [year, month, day] = filterDate.split("-").map(Number);
+      return new Date(year, month - 1, day).toDateString();
+    }
+    return new Date().toDateString();
+  }, [filterDate]);
+
+  const dateLabel = useMemo(() => {
+    if (filterDate) {
+      const [year, month, day] = filterDate.split("-").map(Number);
+      return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+    }
+    return "Today";
+  }, [filterDate]);
+
   // Admin and Accountant Specific States
   const [users, setUsers] = useState([]);
   const [selectedAccountantStatsId, setSelectedAccountantStatsId] =
@@ -149,8 +170,7 @@ const Bills = () => {
       map[accId].totalSales += amt;
 
       const billDateStr = new Date(bill.createdAt).toDateString();
-      const todayStr = new Date().toDateString();
-      if (billDateStr === todayStr) {
+      if (billDateStr === targetDateStr) {
         map[accId].todaySales += amt;
       } else {
         map[accId].beforeSales += amt;
@@ -158,7 +178,7 @@ const Bills = () => {
     });
 
     return Object.values(map).sort((a, b) => b.todaySales - a.todaySales);
-  }, [bills, users, user.role]);
+  }, [bills, users, user.role, targetDateStr]);
 
   // Selected accountant details for stats tracker card
   const selectedAccountantStats = useMemo(() => {
@@ -167,9 +187,8 @@ const Bills = () => {
     );
   }, [salesByAccountant, selectedAccountantStatsId]);
 
-  // Today's stats breakdown by payment method
+  // Stats breakdown by payment method for the selected date
   const todayStats = useMemo(() => {
-    const todayStr = new Date().toDateString();
     let totalSales = 0;
     let totalBills = 0;
     let cashAmount = 0;
@@ -181,7 +200,7 @@ const Bills = () => {
 
     bills.forEach((bill) => {
       const billDate = new Date(bill.createdAt).toDateString();
-      if (billDate === todayStr) {
+      if (billDate === targetDateStr) {
         totalSales += bill.totalAmount;
         totalBills += 1;
         if (bill.paymentMethod === "cash") {
@@ -207,7 +226,7 @@ const Bills = () => {
       onlineAmount,
       onlineCount,
     };
-  }, [bills]);
+  }, [bills, targetDateStr]);
 
   // Client-side filtering
   const filteredBills = useMemo(() => {
@@ -411,7 +430,7 @@ const Bills = () => {
                       letterSpacing: "0.5px",
                     }}
                   >
-                    Today's Sales
+                    {dateLabel}'s Sales
                   </span>
                   <div
                     style={{
@@ -441,7 +460,7 @@ const Bills = () => {
                       letterSpacing: "0.5px",
                     }}
                   >
-                    Before Days
+                    Other Days
                   </span>
                   <div
                     style={{
@@ -512,8 +531,7 @@ const Bills = () => {
                     textAlign: "center",
                   }}
                 >
-                  Select an accountant above to track their daily & historic
-                  sales performance.
+                  Select an accountant above to track their sales performance for {dateLabel.toLowerCase()}.
                 </span>
               </div>
             )}
@@ -546,7 +564,7 @@ const Bills = () => {
                   margin: 0,
                 }}
               >
-                Today's Sales by Accountant
+                {dateLabel === "Today" ? "Today's Sales by Accountant" : `Sales by Accountant on ${dateLabel}`}
               </h3>
             </div>
 
@@ -597,7 +615,7 @@ const Bills = () => {
                           textAlign: "right",
                         }}
                       >
-                        Today's Sales
+                        {dateLabel === "Today" ? "Today's Sales" : "Sales"}
                       </th>
                     </tr>
                   </thead>
@@ -659,7 +677,7 @@ const Bills = () => {
                   color: "var(--color-text-secondary)",
                 }}
               >
-                Grand Total Today:
+                Grand Total {dateLabel === "Today" ? "Today" : `on ${dateLabel}`}:
               </span>
               <span
                 style={{
@@ -703,7 +721,7 @@ const Bills = () => {
                   margin: 0,
                 }}
               >
-                Today's Sales Breakdown
+                {dateLabel === "Today" ? "Today's Sales Breakdown" : `${dateLabel}'s Sales Breakdown`}
               </h3>
             </div>
 
@@ -774,7 +792,7 @@ const Bills = () => {
               }}
             >
               <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
-                Total Sales Today:
+                Total Sales {dateLabel === "Today" ? "Today" : `on ${dateLabel}`}:
               </span>
               <span style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--color-primary)" }}>
                 ₹{todayStats.totalSales.toFixed(2)}
@@ -821,7 +839,7 @@ const Bills = () => {
                   margin: 0,
                 }}
               >
-                Your Today's Sales Breakdown
+                {dateLabel === "Today" ? "Your Today's Sales Breakdown" : `Your ${dateLabel}'s Sales Breakdown`}
               </h3>
             </div>
 
@@ -892,7 +910,7 @@ const Bills = () => {
               }}
             >
               <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
-                Total Sales Today:
+                Total Sales {dateLabel === "Today" ? "Today" : `on ${dateLabel}`}:
               </span>
               <span style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--color-primary)" }}>
                 ₹{todayStats.totalSales.toFixed(2)}
