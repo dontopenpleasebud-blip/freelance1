@@ -167,6 +167,48 @@ const Bills = () => {
     );
   }, [salesByAccountant, selectedAccountantStatsId]);
 
+  // Today's stats breakdown by payment method
+  const todayStats = useMemo(() => {
+    const todayStr = new Date().toDateString();
+    let totalSales = 0;
+    let totalBills = 0;
+    let cashAmount = 0;
+    let cashCount = 0;
+    let cardAmount = 0;
+    let cardCount = 0;
+    let onlineAmount = 0;
+    let onlineCount = 0;
+
+    bills.forEach((bill) => {
+      const billDate = new Date(bill.createdAt).toDateString();
+      if (billDate === todayStr) {
+        totalSales += bill.totalAmount;
+        totalBills += 1;
+        if (bill.paymentMethod === "cash") {
+          cashAmount += bill.totalAmount;
+          cashCount += 1;
+        } else if (bill.paymentMethod === "card") {
+          cardAmount += bill.totalAmount;
+          cardCount += 1;
+        } else if (bill.paymentMethod === "online") {
+          onlineAmount += bill.totalAmount;
+          onlineCount += 1;
+        }
+      }
+    });
+
+    return {
+      totalSales,
+      totalBills,
+      cashAmount,
+      cashCount,
+      cardAmount,
+      cardCount,
+      onlineAmount,
+      onlineCount,
+    };
+  }, [bills]);
+
   // Client-side filtering
   const filteredBills = useMemo(() => {
     return bills.filter((bill) => {
@@ -281,7 +323,7 @@ const Bills = () => {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
             gap: "20px",
             marginBottom: "20px",
           }}
@@ -630,6 +672,230 @@ const Bills = () => {
                 {salesByAccountant
                   .reduce((sum, item) => sum + item.todaySales, 0)
                   .toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          {/* Card 3: Today's Payment Method Breakdown */}
+          <div
+            className="card-panel"
+            style={{
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "16px",
+              }}
+            >
+              <CreditCard size={20} color="var(--color-primary)" />
+              <h3
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  color: "var(--color-text-primary)",
+                  margin: 0,
+                }}
+              >
+                Today's Sales Breakdown
+              </h3>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', flexGrow: 1, alignItems: 'center' }}>
+              <div
+                style={{
+                  background: "var(--color-accent-light)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255, 209, 102, 0.3)",
+                  textAlign: "center"
+                }}
+              >
+                <span style={{ fontSize: "0.75rem", color: "#B28800", fontWeight: 700, textTransform: "uppercase" }}>Cash</span>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-text-primary)", marginTop: "4px" }}>
+                  ₹{todayStats.cashAmount.toFixed(2)}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginTop: "2px", fontWeight: 500 }}>
+                  {todayStats.cashCount} sales
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: "var(--color-primary-light)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(74, 144, 226, 0.3)",
+                  textAlign: "center"
+                }}
+              >
+                <span style={{ fontSize: "0.75rem", color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase" }}>Card</span>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-text-primary)", marginTop: "4px" }}>
+                  ₹{todayStats.cardAmount.toFixed(2)}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginTop: "2px", fontWeight: 500 }}>
+                  {todayStats.cardCount} sales
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: "var(--color-success-light)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(34, 197, 94, 0.3)",
+                  textAlign: "center"
+                }}
+              >
+                <span style={{ fontSize: "0.75rem", color: "var(--color-success)", fontWeight: 700, textTransform: "uppercase" }}>Online</span>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-text-primary)", marginTop: "4px" }}>
+                  ₹{todayStats.onlineAmount.toFixed(2)}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginTop: "2px", fontWeight: 500 }}>
+                  {todayStats.onlineCount} sales
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: "16px",
+                borderTop: "1px solid var(--color-border)",
+                paddingTop: "12px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
+                Total Sales Today:
+              </span>
+              <span style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--color-primary)" }}>
+                ₹{todayStats.totalSales.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Accountant Insights Panel */}
+      {user.role !== "admin" && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "20px",
+            marginBottom: "20px",
+          }}
+        >
+          {/* Card 3: Today's Payment Method Breakdown */}
+          <div
+            className="card-panel"
+            style={{
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginBottom: "16px",
+              }}
+            >
+              <CreditCard size={20} color="var(--color-primary)" />
+              <h3
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  color: "var(--color-text-primary)",
+                  margin: 0,
+                }}
+              >
+                Your Today's Sales Breakdown
+              </h3>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', flexGrow: 1, alignItems: 'center' }}>
+              <div
+                style={{
+                  background: "var(--color-accent-light)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(255, 209, 102, 0.3)",
+                  textAlign: "center"
+                }}
+              >
+                <span style={{ fontSize: "0.75rem", color: "#B28800", fontWeight: 700, textTransform: "uppercase" }}>Cash</span>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-text-primary)", marginTop: "4px" }}>
+                  ₹{todayStats.cashAmount.toFixed(2)}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginTop: "2px", fontWeight: 500 }}>
+                  {todayStats.cashCount} sales
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: "var(--color-primary-light)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(74, 144, 226, 0.3)",
+                  textAlign: "center"
+                }}
+              >
+                <span style={{ fontSize: "0.75rem", color: "var(--color-primary)", fontWeight: 700, textTransform: "uppercase" }}>Card</span>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-text-primary)", marginTop: "4px" }}>
+                  ₹{todayStats.cardAmount.toFixed(2)}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginTop: "2px", fontWeight: 500 }}>
+                  {todayStats.cardCount} sales
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: "var(--color-success-light)",
+                  padding: "16px 12px",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(34, 197, 94, 0.3)",
+                  textAlign: "center"
+                }}
+              >
+                <span style={{ fontSize: "0.75rem", color: "var(--color-success)", fontWeight: 700, textTransform: "uppercase" }}>Online</span>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--color-text-primary)", marginTop: "4px" }}>
+                  ₹{todayStats.onlineAmount.toFixed(2)}
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)", marginTop: "2px", fontWeight: 500 }}>
+                  {todayStats.onlineCount} sales
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: "16px",
+                borderTop: "1px solid var(--color-border)",
+                paddingTop: "12px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--color-text-secondary)" }}>
+                Total Sales Today:
+              </span>
+              <span style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--color-primary)" }}>
+                ₹{todayStats.totalSales.toFixed(2)}
               </span>
             </div>
           </div>

@@ -32,6 +32,12 @@ const Dashboard = () => {
     bills: 0,
     users: 0,
     sales: 0,
+    cashAmount: 0,
+    cashCount: 0,
+    cardAmount: 0,
+    cardCount: 0,
+    onlineAmount: 0,
+    onlineCount: 0,
   });
   const [recentBills, setRecentBills] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,25 +70,46 @@ const Dashboard = () => {
           billsList = await billService.getBillsByAccountant(user._id);
         }
 
-        // Calculate today's sales
+        // Calculate today's sales and payment method breakdown
         const todayStr = new Date().toDateString();
-        const todaySales = billsList.reduce((sum, bill) => {
+        let todaySales = 0;
+        let todayBillsCount = 0;
+        let cashAmount = 0;
+        let cashCount = 0;
+        let cardAmount = 0;
+        let cardCount = 0;
+        let onlineAmount = 0;
+        let onlineCount = 0;
+
+        billsList.forEach((bill) => {
           const billDate = new Date(bill.createdAt).toDateString();
           if (billDate === todayStr) {
-            return sum + bill.totalAmount;
+            todaySales += bill.totalAmount;
+            todayBillsCount += 1;
+            if (bill.paymentMethod === "cash") {
+              cashAmount += bill.totalAmount;
+              cashCount += 1;
+            } else if (bill.paymentMethod === "card") {
+              cardAmount += bill.totalAmount;
+              cardCount += 1;
+            } else if (bill.paymentMethod === "online") {
+              onlineAmount += bill.totalAmount;
+              onlineCount += 1;
+            }
           }
-          return sum;
-        }, 0);
-
-        const todayBillsCount = billsList.filter((bill) => {
-          return new Date(bill.createdAt).toDateString() === todayStr;
-        }).length;
+        });
 
         setStats({
           products: productsCount,
           bills: todayBillsCount,
           users: user.role === "admin" ? usersCount : "N/A",
           sales: todaySales,
+          cashAmount,
+          cashCount,
+          cardAmount,
+          cardCount,
+          onlineAmount,
+          onlineCount,
         });
 
         // Filter and set today's bills only
@@ -204,19 +231,38 @@ const Dashboard = () => {
           </div>
         )}
 
-        <div className="stat-card">
-          <div className="stat-info">
-            <span className="stat-label">
-              {user.role === "admin"
-                ? "Today's Total Sales"
-                : "Your Today's Sales"}
-            </span>
-            <span className="stat-value">
-              ₹{Number(stats.sales).toFixed(2)}
-            </span>
+        <div className="stat-card" style={{ display: "flex", flexDirection: "column", alignItems: "stretch", minWidth: "280px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginBottom: "12px" }}>
+            <div className="stat-info">
+              <span className="stat-label">
+                {user.role === "admin"
+                  ? "Today's Total Sales"
+                  : "Your Today's Sales"}
+              </span>
+              <span className="stat-value">
+                ₹{Number(stats.sales).toFixed(2)}
+              </span>
+            </div>
+            <div className="stat-icon-container red">
+              <TrendingUp size={24} />
+            </div>
           </div>
-          <div className="stat-icon-container red">
-            <TrendingUp size={24} />
+          <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", textAlign: "center" }}>
+            <div>
+              <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", marginBottom: "2px" }}>Cash</div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "#B28800" }}>₹{Number(stats.cashAmount || 0).toFixed(2)}</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--color-text-secondary)", fontWeight: 500 }}>{stats.cashCount || 0} sales</div>
+            </div>
+            <div style={{ borderLeft: "1px solid var(--color-border)", borderRight: "1px solid var(--color-border)" }}>
+              <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", marginBottom: "2px" }}>Card</div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--color-primary)" }}>₹{Number(stats.cardAmount || 0).toFixed(2)}</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--color-text-secondary)", fontWeight: 500 }}>{stats.cardCount || 0} sales</div>
+            </div>
+            <div>
+              <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", marginBottom: "2px" }}>Online</div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--color-success)" }}>₹{Number(stats.onlineAmount || 0).toFixed(2)}</div>
+              <div style={{ fontSize: "0.7rem", color: "var(--color-text-secondary)", fontWeight: 500 }}>{stats.onlineCount || 0} sales</div>
+            </div>
           </div>
         </div>
       </div>
