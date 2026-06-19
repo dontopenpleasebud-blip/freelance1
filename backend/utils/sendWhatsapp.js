@@ -142,18 +142,22 @@ const sendWhatsapp = async (customerNumber, invoice_number, bill_amount) => {
               parameters: [
                 {
                   type: "text",
+                  parameter_name: "invoice_number",
                   text: String(invoice_number),
                 },
                 {
                   type: "text",
+                  parameter_name: "bill_amount",
                   text: String(bill_amount),
                 },
                 {
                   type: "text",
+                  parameter_name: "amount_paid",
                   text: String(amount_paid),
                 },
                 {
                   type: "text",
+                  parameter_name: "bill_link",
                   text: String(bill_link),
                 },
               ],
