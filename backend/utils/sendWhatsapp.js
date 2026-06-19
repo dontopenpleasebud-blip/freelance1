@@ -1,7 +1,6 @@
 const axios = require("axios");
 
-const frontendUrl =
-  process.env.CORS_ORIGIN || "http://localhost:5173";
+const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
 
 const TEST_NUMBERS = [
   "918074200988", // your number
@@ -11,11 +10,7 @@ const TEST_NUMBERS = [
 
 const FALLBACK_NUMBER = "918074200988"; // your number
 
-const sendWhatsapp = async (
-  customerNumber,
-  invoiceNumber,
-  totalAmount,
-) => {
+const sendWhatsapp = async (customerNumber, invoiceNumber, totalAmount) => {
   try {
     if (!customerNumber) {
       console.log("⚠️ No customer number provided");
@@ -39,12 +34,12 @@ const sendWhatsapp = async (
         to: destinationNumber,
         type: "template",
         template: {
-          name: "hello_world",
-	  //name: "invoice_notification",
+          // name: "hello_world",
+          name: "invoice_notification",
           language: {
             code: "en_US",
           },
-          /*components: [
+          components: [
             {
               type: "body",
               parameters: [
@@ -66,7 +61,7 @@ const sendWhatsapp = async (
                 },
               ],
             },
-          ],*/
+          ],
         },
       },
       {
@@ -85,10 +80,7 @@ const sendWhatsapp = async (
     console.log("=================================");
   } catch (error) {
     console.log("=================================");
-    console.error(
-      "❌ WhatsApp Error:",
-      error.response?.data || error.message,
-    );
+    console.error("❌ WhatsApp Error:", error.response?.data || error.message);
     console.log("=================================");
   }
 };
