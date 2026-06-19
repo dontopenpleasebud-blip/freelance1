@@ -37,7 +37,8 @@ const sendWhatsapp = async (customerNumber, invoiceNumber, totalAmount) => {
           // name: "hello_world",
           name: "invoice_notification",
           language: {
-            code: "en_US",
+            // code: "en_US",
+            code: "en",
           },
           components: [
             {
