@@ -155,7 +155,10 @@ const getProductById = async (req, res) => {
 // @route   POST /api/products/
 const createProduct = async (req, res) => {
   try {
-    const { name, serialNumber, price, description, category, productType } = req.body;
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+    const { name, serialNumber, price, description, category, productType } =
+      req.body;
     const image = req.file ? `/uploads/products/${req.file.filename}` : null;
     if (!name || !serialNumber || price === undefined || !category) {
       return res.status(400).json({
@@ -189,7 +192,8 @@ const createProduct = async (req, res) => {
 // @route   PUT /api/products/:id
 const updateProduct = async (req, res) => {
   try {
-    const { name, serialNumber, price, description, category, productType } = req.body;
+    const { name, serialNumber, price, description, category, productType } =
+      req.body;
     const product = await Product.findById(req.params.id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
