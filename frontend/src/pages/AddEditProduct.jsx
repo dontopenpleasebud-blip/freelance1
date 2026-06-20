@@ -123,7 +123,7 @@ const AddEditProduct = () => {
     } catch (err) {
       console.error("Product save error details:", err);
       let errorMsg = "An error occurred while saving the product";
-      
+
       if (err.response?.data) {
         if (typeof err.response.data === "string") {
           // If the server returned an HTML error page (like from Nginx or default Express errors)
@@ -132,9 +132,14 @@ const AddEditProduct = () => {
             errorMsg = match ? match[1] : "Server returned HTML error details";
           } else {
             // Trim any HTML tags if present or show the first 120 characters
-            const doc = new DOMParser().parseFromString(err.response.data, "text/html");
+            const doc = new DOMParser().parseFromString(
+              err.response.data,
+              "text/html",
+            );
             const bodyText = doc.body?.textContent?.trim() || "";
-            errorMsg = bodyText ? bodyText.substring(0, 120) : "Server HTML response";
+            errorMsg = bodyText
+              ? bodyText.substring(0, 120)
+              : "Server HTML response";
           }
         } else if (err.response.data.message) {
           errorMsg = err.response.data.message;
@@ -142,7 +147,7 @@ const AddEditProduct = () => {
       } else if (err.message) {
         errorMsg = err.message;
       }
-      
+
       showError(errorMsg);
     } finally {
       setSubmitting(false);
@@ -297,8 +302,13 @@ const AddEditProduct = () => {
                       return;
                     }
                     try {
-                      const data = await productService.getNextSerial(formData.category);
-                      setFormData((prev) => ({ ...prev, serialNumber: data.nextSerial }));
+                      const data = await productService.getNextSerial(
+                        formData.category,
+                      );
+                      setFormData((prev) => ({
+                        ...prev,
+                        serialNumber: data.nextSerial,
+                      }));
                       showSuccess(`Generated next serial: ${data.nextSerial}`);
                     } catch (err) {
                       console.error(err);
@@ -402,7 +412,7 @@ const AddEditProduct = () => {
           <div className="form-group">
             <label className="form-label">Product Image</label>
 
-            <div 
+            <div
               style={{
                 border: "2px dashed var(--color-border)",
                 borderRadius: "var(--radius-md)",
@@ -416,9 +426,11 @@ const AddEditProduct = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                minHeight: "160px"
+                minHeight: "160px",
               }}
-              onClick={() => document.getElementById("product-image-input").click()}
+              onClick={() =>
+                document.getElementById("product-image-input").click()
+              }
               onDragOver={(e) => {
                 e.preventDefault();
                 e.currentTarget.style.borderColor = "var(--color-primary)";
@@ -455,26 +467,35 @@ const AddEditProduct = () => {
               />
 
               {preview ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", width: "100%" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "12px",
+                    width: "100%",
+                  }}
+                >
                   <img
                     src={preview}
                     alt="preview"
                     onError={(e) => {
                       const categoryImageMap = {
-                        "Milk": "Milk.jpg",
-                        "Cheese": "Cheese.jpg",
-                        "Butter": "Butter.jpg",
-                        "Yogurt": "Curd.jpg",
-                        "Ghee": "Ghee.jpg",
-                        "Paneer": "Paneer.jpg",
-                        "Cream": "Cream.jpg",
-                        "Lassi": "Lassi.jpg",
+                        Milk: "Milk.jpg",
+                        Cheese: "Cheese.jpg",
+                        Butter: "Butter.jpg",
+                        Yogurt: "Curd.jpg",
+                        Ghee: "Ghee.jpg",
+                        Paneer: "Paneer.jpg",
+                        Cream: "Cream.jpg",
+                        Lassi: "Lassi.jpg",
                         "Flavoured Milk": "Flavoured-Milk.jpg",
                         "Ice Cream": "Ice-Cream.jpg",
-                        "Sweets": "Sweets.jpg",
-                        "Spices": "Spices.jpg"
+                        Sweets: "Sweets.jpg",
+                        Spices: "Spices.jpg",
                       };
-                      const filename = categoryImageMap[formData.category] || "Logo.jpg";
+                      const filename =
+                        categoryImageMap[formData.category] || "Logo.jpg";
                       e.target.src = `${import.meta.env.VITE_BACKEND_URI}/uploads/defaults/${filename}`;
                     }}
                     style={{
@@ -483,7 +504,7 @@ const AddEditProduct = () => {
                       objectFit: "cover",
                       borderRadius: "var(--radius-sm)",
                       boxShadow: "var(--shadow-sm)",
-                      border: "1px solid var(--color-border)"
+                      border: "1px solid var(--color-border)",
                     }}
                   />
                   <div style={{ display: "flex", gap: "8px" }}>
@@ -504,7 +525,8 @@ const AddEditProduct = () => {
                         e.stopPropagation();
                         setImage(null);
                         setPreview("");
-                        document.getElementById("product-image-input").value = "";
+                        document.getElementById("product-image-input").value =
+                          "";
                       }}
                       className="btn btn-danger btn-sm"
                       style={{ padding: "6px 12px" }}
@@ -514,12 +536,30 @@ const AddEditProduct = () => {
                   </div>
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
                   <UploadCloud size={32} color="var(--color-primary)" />
-                  <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--color-text-primary)" }}>
+                  <span
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "var(--color-text-primary)",
+                    }}
+                  >
                     Click to upload or drag and drop
                   </span>
-                  <span style={{ fontSize: "0.75rem", color: "var(--color-text-secondary)" }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "var(--color-text-secondary)",
+                    }}
+                  >
                     PNG, JPG, or WEBP (max. 5MB)
                   </span>
                 </div>
