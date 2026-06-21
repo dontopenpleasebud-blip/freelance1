@@ -197,10 +197,10 @@ const LandingPage = () => {
       >
         <div className="lp-container lp-hero-container">
           <div className="lp-hero-content">
-            <span className="lp-badge lp-hero-badge">Established since 2000</span>
+            <span className="lp-badge lp-hero-badge">Established since 2005</span>
             <h1 className="lp-hero-title">Purity You Can Trust, Quality You Can Taste</h1>
             <p className="lp-hero-desc">
-              SLG MILK DAIRYS, in proud partnership with Visakha Dairy, delivers the finest
+              SLG (Sri Lakshmi Ganapathi) MILK DAIRYS, in proud partnership with Visakha Dairy, delivers the finest
               wholesale milk and premium dairy products across East Godavari. Assured freshness
               from farm to table.
             </p>
@@ -256,7 +256,7 @@ const LandingPage = () => {
         <div className="lp-container">
           <div className="lp-section-header lp-text-center">
             <span className="lp-section-subtitle">Who We Are</span>
-            <h2 className="lp-section-title">25 Years of Dairy Excellence</h2>
+            <h2 className="lp-section-title">21 Years of Dairy Excellence</h2>
             <div className="lp-title-underline"></div>
           </div>
 
@@ -264,8 +264,8 @@ const LandingPage = () => {
             <div>
               <h3>Serving Purity to Families and Businesses</h3>
               <p>
-                SLG MILK DAIRYS (Visakha Dairy Partner) has been a cornerstone of the dairy supply
-                chain in East Godavari, Andhra Pradesh, since the year 2000. Under the professional
+                SLG (Sri Lakshmi Ganapathi) MILK DAIRYS (Visakha Dairy Partner) has been a cornerstone of the dairy supply
+                chain in East Godavari, Andhra Pradesh, since the year 2005. Under the professional
                 management of Manikonda Swamy, we run operations based on trust, purity, and absolute
                 commitment to quality.
               </p>
@@ -294,7 +294,7 @@ const LandingPage = () => {
 
             <div className="lp-about-stats-card">
               <div className="lp-stat-box">
-                <span className="lp-stat-number">2000</span>
+                <span className="lp-stat-number">2005</span>
                 <span className="lp-stat-label">Year Established</span>
               </div>
               <div className="lp-stat-box">
@@ -343,7 +343,7 @@ const LandingPage = () => {
                 <div className="lp-v-label">
                   <Briefcase size={16} /> Legal Business Name
                 </div>
-                <div className="lp-v-value">SLG MILK DAIRYS</div>
+                <div className="lp-v-value">SLG (Sri Lakshmi Ganapathi) MILK DAIRYS</div>
               </div>
               <div className="lp-v-item">
                 <div className="lp-v-label">
@@ -353,33 +353,31 @@ const LandingPage = () => {
               </div>
               <div className="lp-v-item">
                 <div className="lp-v-label">
-                  <Award size={16} /> Business Activity
+                  <Award size={16} /> Business Activity & NIC Code
                 </div>
                 <div className="lp-v-value">
-                  Shopping & Retail Wholesale Market (Dairy Products, Ghee, Milk Procurement & Sales)
+                  Wholesale of raw milk & dairy products (NIC: 46302, Services)
                 </div>
               </div>
               <div className="lp-v-item">
                 <div className="lp-v-label">
                   <Calendar size={16} /> Date of Establishment
                 </div>
-                <div className="lp-v-value">June 20, 2000</div>
+                <div className="lp-v-value">January 1, 2005</div>
               </div>
               <div className="lp-v-item">
                 <div className="lp-v-label">
-                  <Info size={16} /> Affiliated Co-Operative
+                  <Shield size={16} /> Udyam Registration
                 </div>
-                <div className="lp-v-value">
-                  Visakha Dairy (The Sri Vijaya Visakha District Milk Producers Mutually Aided Cooperative Union Ltd.)
-                </div>
+                <div className="lp-v-value">UDYAM-AP-03-0012683 (SRI LAKSHMI GANAPATHI MILK AND COOL DRINKS)</div>
               </div>
               <div className="lp-v-item">
                 <div className="lp-v-label">
                   <Mail size={16} /> Official Correspondence Email
                 </div>
                 <div className="lp-v-value">
-                  <a href="mailto:yarramsettimanikondaswamy@gmail.com">
-                    yarramsettimanikondaswamy@gmail.com
+                  <a href="mailto:yerramsettidurgarao435@gmail.com">
+                    yerramsettidurgarao435@gmail.com
                   </a>
                 </div>
               </div>
@@ -388,6 +386,9 @@ const LandingPage = () => {
                   <Phone size={16} /> Verified Business Contacts
                 </div>
                 <div className="lp-v-value lp-flex-phones">
+                  <a href="tel:+918500005377" className="lp-phone-link">
+                    <PhoneCall size={16} /> +91 85000 05377
+                  </a>
                   <a href="tel:+919966675377" className="lp-phone-link">
                     <PhoneCall size={16} /> +91 99666 75377
                   </a>
@@ -402,6 +403,17 @@ const LandingPage = () => {
                 </div>
                 <div className="lp-v-value lp-locations-list">
                   <div>
+                    <strong>Official Registered Address (as per Udyam Certificate):</strong>
+                    <br />
+                    D NO 5-57/3, Main Road, Patha Gannavaram, P.Gannavaram, East Godavari District, Andhra Pradesh - 533240, India
+                  </div>
+                  <div
+                    style={{
+                      marginTop: "10px",
+                      borderTop: "1px solid var(--lp-border)",
+                      paddingTop: "10px"
+                    }}
+                  >
                     <strong>Location 1 (Main Distribution Center):</strong>
                     <br />
                     Near State Bank of India (SBI), Opposite P.Gannavaram, East Godavari District,
@@ -427,7 +439,7 @@ const LandingPage = () => {
               <Info size={24} />
               <span>
                 Please use the above details to cross-reference our official business records during
-                Meta Verification. For document uploads, refer to our Partnership Agreement, Municipal
+                Meta Verification. For document uploads, refer to our Udyam Registration Certificate (UDYAM-AP-03-0012683 under the name SRI LAKSHMI GANAPATHI MILK AND COOL DRINKS), Partnership Agreement, Municipal
                 Trade License, or GST filings showing the matching name, phone number, and address.
               </span>
             </div>
@@ -583,11 +595,11 @@ const LandingPage = () => {
             {[
               {
                 q: "Is SLG Milk Dairys an authorized Visakha Dairy distributor?",
-                a: "Yes. SLG Milk Dairys has been an authorized distributor and franchise partner of Visakha Dairy (Sri Vijaya Visakha District Milk Producers Co-op Union Ltd.) since the year 2000. We distribute authentic, seal-packed Visakha Dairy products under strict cold chain compliance."
+                a: "Yes. SLG Milk Dairys has been an authorized distributor and franchise partner of Visakha Dairy (Sri Vijaya Visakha District Milk Producers Co-op Union Ltd.) since the year 2005. We distribute authentic, seal-packed Visakha Dairy products under strict cold chain compliance."
               },
               {
                 q: "How can we verify the business identity for SLG MILK DAIRYS?",
-                a: "Our official legal business entity name is SLG MILK DAIRYS. You can verify this using our official partnership documentation, GST registration records, or municipal trade licenses. Our verified contact numbers are +91 99666 75377 and +91 85009 35377, and our official email is yarramsettimanikondaswamy@gmail.com."
+                a: "Our official legal business entity name is SLG (Sri Lakshmi Ganapathi) MILK DAIRYS, registered under Udyam as SRI LAKSHMI GANAPATHI MILK AND COOL DRINKS. You can verify this using our official Udyam certificate (UDYAM-AP-03-0012683), partnership documentation, GST registration records, or municipal trade licenses. Our verified contact numbers are +91 85000 05377, +91 99666 75377, and +91 85009 35377, and our official email is yerramsettidurgarao435@gmail.com."
               },
               {
                 q: "What geographic areas do you cover?",
@@ -659,8 +671,8 @@ const LandingPage = () => {
                   <div>
                     <h4>Email Address</h4>
                     <p>
-                      <a href="mailto:yarramsettimanikondaswamy@gmail.com" className="lp-text-light-link">
-                        yarramsettimanikondaswamy@gmail.com
+                      <a href="mailto:yerramsettidurgarao435@gmail.com" className="lp-text-light-link">
+                        yerramsettidurgarao435@gmail.com
                       </a>
                     </p>
                   </div>
@@ -799,8 +811,8 @@ const LandingPage = () => {
         <div className="lp-container lp-footer-content lp-text-center">
           <div className="lp-footer-logo">
             <img src="/logo.png" alt="SLG Logo" className="lp-footer-logo-img" />
-            <h3>SLG MILK DAIRYS</h3>
-            <p>Wholesale Milk & Premium Dairy Products since 2000</p>
+            <h3>SLG (Sri Lakshmi Ganapathi) MILK DAIRYS</h3>
+            <p>Wholesale Milk & Premium Dairy Products since 2005</p>
           </div>
 
           <div className="lp-footer-links">

@@ -21,8 +21,8 @@ import {
 import "./About.css";
 
 const About = () => {
-  const verifiedPhones = ["+91 99666 75377", "+91 85009 35377"];
-  const officialEmail = "yarramsettimanikondaswamy@gmail.com";
+  const verifiedPhones = ["+91 85000 05377", "+91 99666 75377", "+91 85009 35377"];
+  const officialEmail = "yerramsettidurgarao435@gmail.com";
 
   const services = [
     {
@@ -90,12 +90,12 @@ const About = () => {
       <main className="about-card-wrapper">
         {/* Banner Section */}
         <section className="about-hero-banner">
-          <span className="about-hero-badge">Established 2000</span>
+          <span className="about-hero-badge">Established 2005</span>
           <h1 className="about-hero-title">
-            SLG MILK DAIRYS & Visakha Dairy Distributor
+            SLG (Sri Lakshmi Ganapathi) MILK DAIRYS & Visakha Dairy Distributor
           </h1>
           <p className="about-hero-desc">
-            SLG MILK DAIRYS is a premium distributor of Visakha Dairy, serving
+            SLG (Sri Lakshmi Ganapathi) MILK DAIRYS is a premium distributor of Visakha Dairy, serving
             wholesale and retail milk and high-quality dairy items across the East
             Godavari district of Andhra Pradesh, India. Under the professional
             guidance of Yarramsetti Manikonda Swamy, we supply pure, fresh, and
@@ -119,7 +119,7 @@ const About = () => {
               <span className="av-label">
                 <Briefcase size={14} /> Legal Business Name
               </span>
-              <span className="av-value">SLG MILK DAIRYS</span>
+              <span className="av-value">SLG (Sri Lakshmi Ganapathi) MILK DAIRYS</span>
             </div>
 
             <div className="av-item">
@@ -133,7 +133,7 @@ const About = () => {
               <span className="av-label">
                 <Calendar size={14} /> Year of Foundation
               </span>
-              <span className="av-value">2000</span>
+              <span className="av-value">2005 (Established 01/01/2005)</span>
             </div>
 
             <div className="av-item">
@@ -164,9 +164,31 @@ const About = () => {
 
             <div className="av-item av-span-2">
               <span className="av-label">
+                <Shield size={14} /> Udyam Registration Details
+              </span>
+              <div className="av-locations-box">
+                <div className="av-location-item">
+                  <strong>Registration Number:</strong> UDYAM-AP-03-0012683
+                  <br />
+                  <strong>Enterprise Name:</strong> SRI LAKSHMI GANAPATHI MILK AND COOL DRINKS
+                  <br />
+                  <strong>Enterprise Type:</strong> Micro Enterprise (Services)
+                  <br />
+                  <strong>NIC Code:</strong> 46302 (Wholesale of raw milk & dairy products)
+                </div>
+              </div>
+            </div>
+
+            <div className="av-item av-span-2">
+              <span className="av-label">
                 <MapPin size={14} /> Physical & Operating Addresses
               </span>
               <div className="av-locations-box">
+                <div className="av-location-item">
+                  <strong>Official Registered Office (Udyam Address):</strong>
+                  <br />
+                  D NO 5-57/3, Main Road, Patha Gannavaram, P.Gannavaram, East Godavari District, Andhra Pradesh - 533240, India
+                </div>
                 <div className="av-location-item">
                   <strong>Location 1 (Main Distribution Center):</strong>
                   <br />
@@ -187,8 +209,8 @@ const About = () => {
             <Info size={20} className="about-service-icon" style={{ marginTop: "2px" }} />
             <span>
               <strong>Reviewer Note:</strong> This page presents the official registry details of
-              SLG MILK DAIRYS for Meta Business Manager verification. These credentials
-              fully align with our trade registration certificates, phone bills, and
+              SLG (Sri Lakshmi Ganapathi) MILK DAIRYS for Meta Business Manager verification. These credentials
+              fully align with our trade registration certificates (including Udyam Registration UDYAM-AP-03-0012683 under the name SRI LAKSHMI GANAPATHI MILK AND COOL DRINKS), phone bills, and
               association contracts with Visakha Dairy.
             </span>
           </div>
