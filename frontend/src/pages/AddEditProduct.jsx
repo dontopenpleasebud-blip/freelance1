@@ -20,6 +20,7 @@ const AddEditProduct = () => {
     price: "",
     description: "",
     productType: "retail",
+    stock: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,7 @@ const AddEditProduct = () => {
           price: product.price ? product.price.toString() : "",
           description: product.description || "",
           productType: product.productType || "retail",
+          stock: product.stock !== undefined ? product.stock.toString() : "0",
         });
         setPreview(
           product.image
@@ -86,6 +88,12 @@ const AddEditProduct = () => {
       tempErrors.price = "Price must be a valid positive number";
     }
 
+    if (formData.stock === "" || formData.stock === undefined || formData.stock === null) {
+      tempErrors.stock = "Stock is required";
+    } else if (isNaN(formData.stock) || parseInt(formData.stock, 10) < 0) {
+      tempErrors.stock = "Stock must be a non-negative integer";
+    }
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -107,6 +115,7 @@ const AddEditProduct = () => {
       payload.append("price", formData.price);
       payload.append("description", formData.description.trim());
       payload.append("productType", formData.productType);
+      payload.append("stock", formData.stock);
 
       if (image) {
         payload.append("image", image);
@@ -353,25 +362,48 @@ const AddEditProduct = () => {
             </div>
           </div>
 
-          {/* Product Price */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="price">
-              Product Price (₹) *
-            </label>
-            <input
-              id="price"
-              name="price"
-              type="number"
-              step="any"
-              placeholder="e.g. 120.00"
-              value={formData.price}
-              onChange={handleChange}
-              className="form-input"
-              disabled={submitting}
-            />
-            {errors.price && (
-              <span className="form-error-msg">{errors.price}</span>
-            )}
+          {/* Row of Price and Stock */}
+          <div className="form-row">
+            {/* Product Price */}
+            <div className="form-group">
+              <label className="form-label" htmlFor="price">
+                Product Price (₹) *
+              </label>
+              <input
+                id="price"
+                name="price"
+                type="number"
+                step="any"
+                placeholder="e.g. 120.00"
+                value={formData.price}
+                onChange={handleChange}
+                className="form-input"
+                disabled={submitting}
+              />
+              {errors.price && (
+                <span className="form-error-msg">{errors.price}</span>
+              )}
+            </div>
+
+            {/* Product Stock */}
+            <div className="form-group">
+              <label className="form-label" htmlFor="stock">
+                Stock Quantity *
+              </label>
+              <input
+                id="stock"
+                name="stock"
+                type="number"
+                placeholder="e.g. 100"
+                value={formData.stock}
+                onChange={handleChange}
+                className="form-input"
+                disabled={submitting}
+              />
+              {errors.stock && (
+                <span className="form-error-msg">{errors.stock}</span>
+              )}
+            </div>
           </div>
 
           {/* Product Type (Retail / Wholesale) */}

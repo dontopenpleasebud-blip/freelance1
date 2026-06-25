@@ -169,7 +169,7 @@ const createProduct = async (req, res) => {
       stock,
     } = req.body;
     const image = req.file ? `/uploads/products/${req.file.filename}` : null;
-    if (!name || !serialNumber || price === undefined || !category || !stock) {
+    if (!name || !serialNumber || price === undefined || !category || stock === undefined) {
       return res.status(400).json({
         message: "Name, serial number, category, price and stock are required",
       });

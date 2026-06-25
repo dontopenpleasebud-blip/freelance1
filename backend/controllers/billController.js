@@ -47,6 +47,12 @@ exports.createBill = async (req, res) => {
           message: `Product '${product.name}' is of type '${prodType}' and cannot be added to a '${billType}' bill.`,
         });
       }
+      // Check stock availability
+      if (product.stock !== undefined && product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Insufficient stock for product '${product.name}'. Available: ${product.stock}, Requested: ${item.quantity}`,
+        });
+      }
       const lineTotal = product.price * item.quantity;
       totalAmount += lineTotal;
       billItems.push({
@@ -85,6 +91,13 @@ exports.createBill = async (req, res) => {
       billType,
     });
     await bill.save();
+
+    // Deduct stock for each product
+    for (const item of products) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: -item.quantity },
+      });
+    }
 
     // Populate accountant name and product info to return full bill details
     const populatedBill = await Bill.findById(bill._id)

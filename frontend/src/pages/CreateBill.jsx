@@ -20,7 +20,7 @@ import {
 
 const CreateBill = ({ billType = "retail" }) => {
   const { user } = useAuth();
-  const { showSuccess, showError, showWarning } = useToast();
+  const { showSuccess, showError, showWarning, showInfo } = useToast();
 
   // POS State
   const [customerNumber, setCustomerNumber] = useState("");
@@ -120,10 +120,19 @@ const CreateBill = ({ billType = "retail" }) => {
 
   // Add product to cart
   const addToCart = (product) => {
+    if (product.stock === 0) {
+      showWarning("This product is currently out of stock.");
+      return;
+    }
     setCart((prevCart) => {
       const existing = prevCart.find(
         (item) => item.product._id === product._id,
       );
+      const currentQty = existing ? existing.quantity : 0;
+      if (product.stock !== undefined && currentQty + 1 > product.stock) {
+        showWarning(`Cannot add more. Only ${product.stock} units available in stock.`);
+        return prevCart;
+      }
       if (existing) {
         return prevCart.map((item) =>
           item.product._id === product._id
@@ -137,17 +146,29 @@ const CreateBill = ({ billType = "retail" }) => {
 
   // Adjust quantity
   const updateQty = (productId, delta) => {
-    setCart((prevCart) =>
-      prevCart
+    setCart((prevCart) => {
+      let isExceeded = false;
+      const updated = prevCart
         .map((item) => {
           if (item.product._id === productId) {
             const newQty = item.quantity + delta;
+            if (delta > 0 && item.product.stock !== undefined && newQty > item.product.stock) {
+              isExceeded = true;
+              return item;
+            }
             return { ...item, quantity: Math.max(1, newQty) };
           }
           return item;
         })
-        .filter((item) => item.quantity > 0),
-    );
+        .filter((item) => item.quantity > 0);
+
+      if (isExceeded) {
+        const item = prevCart.find((i) => i.product._id === productId);
+        showWarning(`Cannot add more. Only ${item.product.stock} units available in stock.`);
+        return prevCart;
+      }
+      return updated;
+    });
   };
 
   // Remove from cart
@@ -319,7 +340,11 @@ const CreateBill = ({ billType = "retail" }) => {
             {products.map((product) => (
               <div
                 key={product._id}
-                className="catalog-item-card"
+                className={`catalog-item-card ${product.stock === 0 ? "disabled" : ""}`}
+                style={{
+                  opacity: product.stock === 0 ? 0.6 : 1,
+                  cursor: product.stock === 0 ? "not-allowed" : "pointer"
+                }}
                 onClick={() => addToCart(product)}
               >
                 <div
@@ -391,11 +416,22 @@ const CreateBill = ({ billType = "retail" }) => {
                       WebkitLineClamp: 1,
                       WebkitBoxOrient: "vertical",
                       overflow: "hidden",
-                      marginBottom: "4px",
+                      marginBottom: "2px",
                     }}
                   >
                     {product.name}
                   </h4>
+                  <span
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      color: product.stock === 0 ? "var(--color-danger)" : product.stock < 10 ? "var(--color-warning)" : "var(--color-text-secondary)",
+                      display: "block",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {product.stock === 0 ? "Out of Stock" : `Stock: ${product.stock}`}
+                  </span>
                 </div>
                 <div
                   style={{
@@ -418,16 +454,16 @@ const CreateBill = ({ billType = "retail" }) => {
                   <span
                     style={{
                       fontSize: "0.75rem",
-                      backgroundColor: "var(--color-primary)",
-                      color: "#FFFFFF",
+                      backgroundColor: product.stock === 0 ? "var(--color-border)" : "var(--color-primary)",
+                      color: product.stock === 0 ? "var(--color-text-secondary)" : "#FFFFFF",
                       padding: "4px 10px",
                       borderRadius: "6px",
                       fontWeight: 600,
-                      boxShadow: "0 2px 4px rgba(74, 144, 226, 0.25)",
+                      boxShadow: product.stock === 0 ? "none" : "0 2px 4px rgba(74, 144, 226, 0.25)",
                       transition: "all var(--transition-fast) ease",
                     }}
                   >
-                    Add +
+                    {product.stock === 0 ? "Out" : "Add +"}
                   </span>
                 </div>
               </div>

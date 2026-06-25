@@ -514,11 +514,23 @@ const Products = () => {
 
               <div
                 className="product-card-footer"
-                style={{ marginTop: "auto" }}
+                style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
-                <span className="product-card-price">
-                  ₹{product.price.toFixed(2)}
-                </span>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <span className="product-card-price">
+                    ₹{product.price.toFixed(2)}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      color: product.stock === 0 ? "var(--color-danger)" : product.stock < 10 ? "var(--color-warning)" : "var(--color-text-secondary)",
+                      marginTop: "2px"
+                    }}
+                  >
+                    {product.stock === 0 ? "Out of Stock" : `Stock: ${product.stock}`}
+                  </span>
+                </div>
 
                 {user?.role === "admin" && (
                   <div className="product-actions-btn-group">
@@ -556,6 +568,7 @@ const Products = () => {
                   <th>Product Type</th>
                   <th>Category</th>
                   <th>Price</th>
+                  <th>Stock</th>
                   <th>Description</th>
                   {user?.role === "admin" && (
                     <th style={{ textAlign: "center" }}>Actions</th>
@@ -595,6 +608,20 @@ const Products = () => {
                     <td data-label="Category">{product.category}</td>
                     <td data-label="Price" style={{ fontWeight: 600 }}>
                       ₹{product.price.toFixed(2)}
+                    </td>
+                    <td
+                      data-label="Stock"
+                      style={{
+                        fontWeight: 600,
+                        color:
+                          product.stock === 0
+                            ? "var(--color-danger)"
+                            : product.stock < 10
+                              ? "var(--color-warning)"
+                              : "inherit",
+                      }}
+                    >
+                      {product.stock === 0 ? "Out of Stock" : product.stock}
                     </td>
                     <td
                       data-label="Description"
