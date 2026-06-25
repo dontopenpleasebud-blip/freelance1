@@ -4,30 +4,33 @@ const BillSchema = new mongoose.Schema(
   {
     customerName: {
       type: String,
-      ref: "customerName",
-      required: true,
+      default: "Anonymous",
     },
     customerPhone: {
       type: String,
-      required: true,
+      default: "Anonymous",
     },
-    loyalityPoints: {
-      type: Number,
-      default: 0,
+    optOut: {
+      type: Boolean,
+      default: false,
     },
-    productsHistory: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
+    // loyalityPoints: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // productsHistory: [
+    //   {
+    //     product: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Product",
+    //       required: true,
+    //     },
+    //     quantity: {
+    //       type: Number,
+    //       required: true,
+    //     },
+    //   },
+    // ],
   },
   {
     timestamps: true,
