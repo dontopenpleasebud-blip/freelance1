@@ -1,4 +1,5 @@
 const axios = require("axios");
+const CustomerRecord = require("../models/CustomerRecord");
 
 const frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
 
@@ -24,9 +25,26 @@ const sendWhatsapp = async (customerNumber, invoice_number, bill_amount) => {
       ? customerNumber
       : `91${customerNumber}`;
 
-    // const destinationNumber = TEST_NUMBERS.includes(formattedCustomer)
-    //   ? formattedCustomer
-    //   : FALLBACK_NUMBER;
+    const customer = await CustomerRecord.findOne({
+      customerPhone: formattedCustomer,
+    });
+    console.log("Customer OptOut Status:", customer?.optOut);
+
+    if (customer?.optOut) {
+      console.log(
+        `CustomerNumber:${customerNumber} opted out... not sending message`,
+      );
+      return;
+    } else {
+      await CustomerRecord.findOneAndUpdate(
+        { customerPhone: formattedCustomer },
+        { optOut: false },
+        { upsert: true },
+      );
+      console.log(
+        `CustomerNumber:${customerNumber} opted in... sending message`,
+      );
+    }
 
     // CONFIGURATION NOTE: If your template URL button was created with a base URL like
     // "https://yourdomain.com", then this variable should only be the invoice_number string.
@@ -85,7 +103,7 @@ const sendWhatsapp = async (customerNumber, invoice_number, bill_amount) => {
     console.log("=================================");
     console.log("✅ WhatsApp sent successfully");
     console.log("Customer Entered:", customerNumber);
-    console.log("Message Sent To:", destinationNumber);
+    console.log("Message Sent To:", formattedCustomer);
     console.log("Invoice:", invoice_number);
     console.log("=================================");
   } catch (error) {
