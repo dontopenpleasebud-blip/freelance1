@@ -26,9 +26,11 @@ import {
   X,
   Check,
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import "./LandingPage.css";
 
 const LandingPage = () => {
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -187,9 +189,15 @@ const LandingPage = () => {
             >
               FAQs
             </a>
-            <Link to="/login" className="lp-btn lp-btn-nav">
-              Portal Log In
-            </Link>
+            {user ? (
+              <Link to="/dashboard" className="lp-btn lp-btn-nav">
+                Dashboard
+              </Link>
+            ) : (
+              <Link to="/login" className="lp-btn lp-btn-nav">
+                Portal Log In
+              </Link>
+            )}
           </nav>
 
           <button
