@@ -310,6 +310,7 @@ const Products = () => {
                 <option value="">All</option>
                 <option value="retail">Retail</option>
                 <option value="wholesale">Wholesale</option>
+                <option value="both">Both</option>
               </select>
             </div>
             {/* Category Filter */}
@@ -487,12 +488,16 @@ const Products = () => {
                         fontSize: "0.75rem",
                         fontWeight: 600,
                         backgroundColor:
-                          product.productType === "wholesale"
+                          product.productType === "wholesale" || product.productType === "Wholesale"
                             ? "var(--color-primary-light)"
+                            : product.productType === "both" || product.productType === "Both"
+                            ? "var(--color-warning-light)"
                             : "var(--color-success-light)",
                         color:
-                          product.productType === "wholesale"
+                          product.productType === "wholesale" || product.productType === "Wholesale"
                             ? "var(--color-primary)"
+                            : product.productType === "both" || product.productType === "Both"
+                            ? "var(--color-warning)"
                             : "var(--color-success)",
                         padding: "0.25rem 0.5rem",
                         borderRadius: "var(--radius-sm)",
@@ -517,8 +522,17 @@ const Products = () => {
                 style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span className="product-card-price">
-                    ₹{product.price.toFixed(2)}
+                  <span className="product-card-price" style={{ display: "flex", flexDirection: "column" }}>
+                    {(product.productType === "both" || product.productType === "Both") ? (
+                      <>
+                        <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>R: ₹{(product.retailPrice || 0).toFixed(2)}</span>
+                        <span style={{ fontSize: "0.85rem", fontWeight: 500 }}>W: ₹{(product.wholesalePrice || 0).toFixed(2)}</span>
+                      </>
+                    ) : (product.productType === "wholesale" || product.productType === "Wholesale") ? (
+                      `₹${(product.wholesalePrice || product.price || 0).toFixed(2)}`
+                    ) : (
+                      `₹${(product.retailPrice || product.price || 0).toFixed(2)}`
+                    )}
                   </span>
                   <span
                     style={{
@@ -591,12 +605,16 @@ const Products = () => {
                           fontSize: "0.75rem",
                           fontWeight: 600,
                           backgroundColor:
-                            product.productType === "wholesale"
+                            product.productType === "wholesale" || product.productType === "Wholesale"
                               ? "var(--color-primary-light)"
+                              : product.productType === "both" || product.productType === "Both"
+                              ? "var(--color-warning-light)"
                               : "var(--color-success-light)",
                           color:
-                            product.productType === "wholesale"
+                            product.productType === "wholesale" || product.productType === "Wholesale"
                               ? "var(--color-primary)"
+                              : product.productType === "both" || product.productType === "Both"
+                              ? "var(--color-warning)"
                               : "var(--color-success)",
                           padding: "2px 6px",
                           borderRadius: "4px",
@@ -607,7 +625,16 @@ const Products = () => {
                     </td>
                     <td data-label="Category">{product.category}</td>
                     <td data-label="Price" style={{ fontWeight: 600 }}>
-                      ₹{product.price.toFixed(2)}
+                      {(product.productType === "both" || product.productType === "Both") ? (
+                        <div style={{ display: "flex", flexDirection: "column", fontSize: "0.85rem" }}>
+                          <span>R: ₹{(product.retailPrice || 0).toFixed(2)}</span>
+                          <span>W: ₹{(product.wholesalePrice || 0).toFixed(2)}</span>
+                        </div>
+                      ) : (product.productType === "wholesale" || product.productType === "Wholesale") ? (
+                        `₹${(product.wholesalePrice || product.price || 0).toFixed(2)}`
+                      ) : (
+                        `₹${(product.retailPrice || product.price || 0).toFixed(2)}`
+                      )}
                     </td>
                     <td
                       data-label="Stock"

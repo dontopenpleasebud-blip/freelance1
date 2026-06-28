@@ -17,7 +17,8 @@ const AddEditProduct = () => {
     name: "",
     serialNumber: "",
     category: "",
-    price: "",
+    retailPrice: "",
+    wholesalePrice: "",
     description: "",
     productType: "retail",
     stock: "",
@@ -39,9 +40,10 @@ const AddEditProduct = () => {
           name: product.name || "",
           serialNumber: product.serialNumber || "",
           category: product.category || "",
-          price: product.price ? product.price.toString() : "",
+          retailPrice: product.retailPrice !== undefined ? product.retailPrice.toString() : "",
+          wholesalePrice: product.wholesalePrice !== undefined ? product.wholesalePrice.toString() : "",
           description: product.description || "",
-          productType: product.productType || "retail",
+          productType: (product.productType || "retail").toLowerCase(),
           stock: product.stock !== undefined ? product.stock.toString() : "0",
         });
         setPreview(
@@ -82,10 +84,20 @@ const AddEditProduct = () => {
       tempErrors.serialNumber = "Serial Number is required";
     if (!formData.category) tempErrors.category = "Please select a category";
 
-    if (!formData.price) {
-      tempErrors.price = "Price is required";
-    } else if (isNaN(formData.price) || parseFloat(formData.price) <= 0) {
-      tempErrors.price = "Price must be a valid positive number";
+    if (formData.productType === "retail" || formData.productType === "both") {
+      if (!formData.retailPrice) {
+        tempErrors.retailPrice = "Retail Price is required";
+      } else if (isNaN(formData.retailPrice) || parseFloat(formData.retailPrice) <= 0) {
+        tempErrors.retailPrice = "Retail Price must be a valid positive number";
+      }
+    }
+
+    if (formData.productType === "wholesale" || formData.productType === "both") {
+      if (!formData.wholesalePrice) {
+        tempErrors.wholesalePrice = "Wholesale Price is required";
+      } else if (isNaN(formData.wholesalePrice) || parseFloat(formData.wholesalePrice) <= 0) {
+        tempErrors.wholesalePrice = "Wholesale Price must be a valid positive number";
+      }
     }
 
     if (formData.stock === "" || formData.stock === undefined || formData.stock === null) {
@@ -112,7 +124,12 @@ const AddEditProduct = () => {
         formData.serialNumber.trim().toUpperCase(),
       );
       payload.append("category", formData.category);
-      payload.append("price", formData.price);
+      if (formData.productType === "retail" || formData.productType === "both") {
+        payload.append("retailPrice", formData.retailPrice);
+      }
+      if (formData.productType === "wholesale" || formData.productType === "both") {
+        payload.append("wholesalePrice", formData.wholesalePrice);
+      }
       payload.append("description", formData.description.trim());
       payload.append("productType", formData.productType);
       payload.append("stock", formData.stock);
@@ -362,28 +379,72 @@ const AddEditProduct = () => {
             </div>
           </div>
 
+          {/* Product Type (Retail / Wholesale / Both) */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="productType">
+              Product Type *
+            </label>
+            <select
+              id="productType"
+              name="productType"
+              value={formData.productType}
+              onChange={handleChange}
+              className="form-input"
+              disabled={submitting}
+            >
+              <option value="retail">Retail</option>
+              <option value="wholesale">Wholesale</option>
+              <option value="both">Both (Retail & Wholesale)</option>
+            </select>
+          </div>
+
           {/* Row of Price and Stock */}
           <div className="form-row">
-            {/* Product Price */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="price">
-                Product Price (₹) *
-              </label>
-              <input
-                id="price"
-                name="price"
-                type="number"
-                step="any"
-                placeholder="e.g. 120.00"
-                value={formData.price}
-                onChange={handleChange}
-                className="form-input"
-                disabled={submitting}
-              />
-              {errors.price && (
-                <span className="form-error-msg">{errors.price}</span>
-              )}
-            </div>
+            {/* Retail Price */}
+            {(formData.productType === "retail" || formData.productType === "both") && (
+              <div className="form-group">
+                <label className="form-label" htmlFor="retailPrice">
+                  Retail Price (₹) *
+                </label>
+                <input
+                  id="retailPrice"
+                  name="retailPrice"
+                  type="number"
+                  step="any"
+                  placeholder="e.g. 120.00"
+                  value={formData.retailPrice}
+                  onChange={handleChange}
+                  className="form-input"
+                  disabled={submitting}
+                />
+                {errors.retailPrice && (
+                  <span className="form-error-msg">{errors.retailPrice}</span>
+                )}
+              </div>
+            )}
+
+            {/* Wholesale Price */}
+            {(formData.productType === "wholesale" || formData.productType === "both") && (
+              <div className="form-group">
+                <label className="form-label" htmlFor="wholesalePrice">
+                  Wholesale Price (₹) *
+                </label>
+                <input
+                  id="wholesalePrice"
+                  name="wholesalePrice"
+                  type="number"
+                  step="any"
+                  placeholder="e.g. 100.00"
+                  value={formData.wholesalePrice}
+                  onChange={handleChange}
+                  className="form-input"
+                  disabled={submitting}
+                />
+                {errors.wholesalePrice && (
+                  <span className="form-error-msg">{errors.wholesalePrice}</span>
+                )}
+              </div>
+            )}
 
             {/* Product Stock */}
             <div className="form-group">
@@ -404,24 +465,6 @@ const AddEditProduct = () => {
                 <span className="form-error-msg">{errors.stock}</span>
               )}
             </div>
-          </div>
-
-          {/* Product Type (Retail / Wholesale) */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="productType">
-              Product Type *
-            </label>
-            <select
-              id="productType"
-              name="productType"
-              value={formData.productType}
-              onChange={handleChange}
-              className="form-input"
-              disabled={submitting}
-            >
-              <option value="retail">Retail</option>
-              <option value="wholesale">Wholesale</option>
-            </select>
           </div>
 
           {/* Description */}
