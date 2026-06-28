@@ -34,10 +34,26 @@ const getProducts = async (req, res) => {
 
     // Product Type filter
     if (productType) {
-      if (productType === "retail") {
+      const typeLower = productType.toLowerCase();
+      if (typeLower === "retail") {
         filter.$or = [
+          { productType: "Retail" },
           { productType: "retail" },
+          { productType: "Both" },
+          { productType: "both" },
           { productType: { $exists: false } },
+        ];
+      } else if (typeLower === "wholesale") {
+        filter.$or = [
+          { productType: "Wholesale" },
+          { productType: "wholesale" },
+          { productType: "Both" },
+          { productType: "both" },
+        ];
+      } else if (typeLower === "both") {
+        filter.$or = [
+          { productType: "Both" },
+          { productType: "both" },
         ];
       } else {
         filter.productType = productType;
@@ -110,8 +126,18 @@ const getProducts = async (req, res) => {
 
     const productsWithImages = products.map((product) => {
       const productObj = product.toObject();
+      let price = productObj.retailPrice !== undefined ? productObj.retailPrice : (productObj.price || 0);
+      if (productType) {
+        const typeLower = productType.toLowerCase();
+        if (typeLower === "wholesale") {
+          price = productObj.wholesalePrice !== undefined ? productObj.wholesalePrice : (productObj.price || 0);
+        } else if (typeLower === "retail") {
+          price = productObj.retailPrice !== undefined ? productObj.retailPrice : (productObj.price || 0);
+        }
+      }
       return {
         ...productObj,
+        price,
         image:
           productObj.image ||
           categoryDefaults[productObj.category] ||
@@ -142,6 +168,7 @@ const getProductById = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     const productObj = product.toObject();
+    productObj.price = productObj.retailPrice !== undefined ? productObj.retailPrice : (productObj.price || 0);
     productObj.image =
       productObj.image ||
       categoryDefaults[productObj.category] ||
@@ -159,21 +186,49 @@ const createProduct = async (req, res) => {
   try {
     console.log("BODY:", req.body);
     console.log("FILE:", req.file);
-    const {
+    let {
       name,
       serialNumber,
       price,
+      retailPrice,
+      wholesalePrice,
       description,
       category,
       productType,
       stock,
     } = req.body;
     const image = req.file ? `/uploads/products/${req.file.filename}` : null;
-    if (!name || !serialNumber || price === undefined || !category || stock === undefined) {
+
+    if (productType) {
+      const typeLower = productType.toLowerCase();
+      if (typeLower === "retail") productType = "Retail";
+      else if (typeLower === "wholesale") productType = "Wholesale";
+      else if (typeLower === "both") productType = "Both";
+    } else {
+      productType = "Retail";
+    }
+
+    if (price !== undefined && price !== "") {
+      const numPrice = Number(price);
+      if (productType === "Retail" && retailPrice === undefined) retailPrice = numPrice;
+      if (productType === "Wholesale" && wholesalePrice === undefined) wholesalePrice = numPrice;
+      if (productType === "Both") {
+        if (retailPrice === undefined) retailPrice = numPrice;
+        if (wholesalePrice === undefined) wholesalePrice = numPrice;
+      }
+    }
+
+    const hasPrice = 
+      (productType === "Retail" && (retailPrice !== undefined && retailPrice !== "")) ||
+      (productType === "Wholesale" && (wholesalePrice !== undefined && wholesalePrice !== "")) ||
+      (productType === "Both" && (retailPrice !== undefined && retailPrice !== "") && (wholesalePrice !== undefined && wholesalePrice !== ""));
+
+    if (!name || !serialNumber || !category || stock === undefined || !hasPrice) {
       return res.status(400).json({
-        message: "Name, serial number, category, price and stock are required",
+        message: "Name, serial number, category, required price fields, and stock are required",
       });
     }
+
     const existingProduct = await Product.findOne({ serialNumber });
     if (existingProduct) {
       return res
@@ -183,12 +238,13 @@ const createProduct = async (req, res) => {
     const product = new Product({
       name,
       serialNumber,
-      price,
+      retailPrice: retailPrice !== undefined ? Number(retailPrice) : 0,
+      wholesalePrice: wholesalePrice !== undefined ? Number(wholesalePrice) : 0,
       description: description || "",
       category,
       image,
-      productType: productType || "retail",
-      stock,
+      productType,
+      stock: Number(stock),
     });
     await product.save();
     res.status(201).json(product);
@@ -202,10 +258,12 @@ const createProduct = async (req, res) => {
 // @route   PUT /api/products/:id
 const updateProduct = async (req, res) => {
   try {
-    const {
+    let {
       name,
       serialNumber,
       price,
+      retailPrice,
+      wholesalePrice,
       description,
       category,
       productType,
@@ -215,12 +273,31 @@ const updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    if (price !== undefined) product.price = price;
+
+    if (productType !== undefined) {
+      const typeLower = productType.toLowerCase();
+      if (typeLower === "retail") product.productType = "Retail";
+      else if (typeLower === "wholesale") product.productType = "Wholesale";
+      else if (typeLower === "both") product.productType = "Both";
+    }
+
+    if (price !== undefined && price !== "") {
+      const numPrice = Number(price);
+      const currentType = product.productType;
+      if (currentType === "Retail" && retailPrice === undefined) retailPrice = numPrice;
+      if (currentType === "Wholesale" && wholesalePrice === undefined) wholesalePrice = numPrice;
+      if (currentType === "Both") {
+        if (retailPrice === undefined) retailPrice = numPrice;
+        if (wholesalePrice === undefined) wholesalePrice = numPrice;
+      }
+    }
+
+    if (retailPrice !== undefined) product.retailPrice = Number(retailPrice);
+    if (wholesalePrice !== undefined) product.wholesalePrice = Number(wholesalePrice);
     if (description !== undefined) product.description = description;
     if (category !== undefined) product.category = category;
     if (name) product.name = name;
-    if (productType !== undefined) product.productType = productType;
-    if (stock !== undefined) product.stock = stock;
+    if (stock !== undefined) product.stock = Number(stock);
     if (serialNumber) {
       const existingProduct = await Product.findOne({
         serialNumber,

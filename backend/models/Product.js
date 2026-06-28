@@ -16,14 +16,18 @@ const ProductSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    price: {
+    retailPrice: {
+      type: Number,
+      default: 0,
+    },
+    wholesalePrice: {
       type: Number,
       default: 0,
     },
     productType: {
       type: String,
-      enum: ["retail", "wholesale"],
-      default: "retail",
+      enum: ["Retail", "Wholesale", "Both"],
+      default: "Retail",
     },
     description: {
       type: String,

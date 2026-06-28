@@ -5,6 +5,23 @@ const sendWhatsapp = require("../utils/sendWhatsapp");
 const Counter = require("../models/Counter");
 const CustomerRecord = require("../models/CustomerRecord");
 
+const mapBillProductsPrice = (bill) => {
+  if (!bill) return null;
+  const billObj = bill.toObject ? bill.toObject() : bill;
+  if (billObj.products && Array.isArray(billObj.products)) {
+    billObj.products.forEach((item) => {
+      if (item.product && typeof item.product === "object") {
+        const prodType = item.product.productType || "Retail";
+        item.product.price =
+          billObj.billType === "wholesale"
+            ? (item.product.wholesalePrice !== undefined ? item.product.wholesalePrice : (item.product.price || 0))
+            : (item.product.retailPrice !== undefined ? item.product.retailPrice : (item.product.price || 0));
+      }
+    });
+  }
+  return billObj;
+};
+
 // Create a new bill
 exports.createBill = async (req, res) => {
   try {
@@ -42,8 +59,12 @@ exports.createBill = async (req, res) => {
           .status(404)
           .json({ message: `Product not found: ${item.product}` });
       }
-      const prodType = product.productType || "retail";
-      if (prodType !== billType) {
+      const prodType = product.productType || "Retail";
+      const isAllowed = 
+        prodType.toLowerCase() === "both" || 
+        prodType.toLowerCase() === billType.toLowerCase();
+
+      if (!isAllowed) {
         return res.status(400).json({
           message: `Product '${product.name}' is of type '${prodType}' and cannot be added to a '${billType}' bill.`,
         });
@@ -54,12 +75,13 @@ exports.createBill = async (req, res) => {
           message: `Insufficient stock for product '${product.name}'. Available: ${product.stock}, Requested: ${item.quantity}`,
         });
       }
-      const lineTotal = product.price * item.quantity;
+      const price = billType === "wholesale" ? product.wholesalePrice : product.retailPrice;
+      const lineTotal = price * item.quantity;
       totalAmount += lineTotal;
       billItems.push({
         name: product.name,
         quantity: item.quantity,
-        price: product.price,
+        price: price,
         lineTotal,
       });
     }
@@ -153,9 +175,9 @@ exports.createBill = async (req, res) => {
     // Populate accountant name and product info to return full bill details
     const populatedBill = await Bill.findById(bill._id)
       .populate("accountant", "name")
-      .populate("products.product", "name price productType");
+      .populate("products.product", "name price retailPrice wholesalePrice productType");
 
-    res.status(201).json(populatedBill);
+    res.status(201).json(mapBillProductsPrice(populatedBill));
 
     if (customerMail) {
       let frontendUrl = process.env.CORS_ORIGIN || "http://localhost:5173";
@@ -259,8 +281,8 @@ exports.getBills = async (req, res) => {
     const bills = await Bill.find(filter)
       .sort({ createdAt: -1 })
       .populate("accountant", "name")
-      .populate("products.product", "name price productType");
-    res.json(bills);
+      .populate("products.product", "name price retailPrice wholesalePrice productType");
+    res.json(bills.map(mapBillProductsPrice));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -272,11 +294,11 @@ exports.getBillById = async (req, res) => {
   try {
     const bill = await Bill.findOne({ invoiceNumber: req.params.invoiceNumber })
       .populate("accountant", "name")
-      .populate("products.product", "name price productType");
+      .populate("products.product", "name price retailPrice wholesalePrice productType");
     if (!bill) {
       return res.status(404).json({ message: "Bill not found" });
     }
-    res.json(bill);
+    res.json(mapBillProductsPrice(bill));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -293,13 +315,13 @@ exports.getBillByCustomerNumber = async (req, res) => {
     }
     const bills = await Bill.find({ customerNumber: req.params.customerNumber })
       .populate("accountant", "name")
-      .populate("products.product", "name price productType");
+      .populate("products.product", "name price retailPrice wholesalePrice productType");
     if (bills.length === 0) {
       return res
         .status(404)
         .json({ message: "No bills found for this customer number" });
     }
-    res.json(bills);
+    res.json(bills.map(mapBillProductsPrice));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -314,8 +336,8 @@ exports.getBillByAccountantId = async (req, res) => {
     const bills = await Bill.find(filter)
       .sort({ createdAt: -1 })
       .populate("accountant", "name")
-      .populate("products.product", "name price productType");
-    res.json(bills);
+      .populate("products.product", "name price retailPrice wholesalePrice productType");
+    res.json(bills.map(mapBillProductsPrice));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -374,8 +396,12 @@ exports.updateBill = async (req, res) => {
         if (!product) {
           throw new Error(`Product not found: ${item.product}`);
         }
-        const prodType = product.productType || "retail";
-        if (prodType !== finalBillType) {
+        const prodType = product.productType || "Retail";
+        const isAllowed = 
+          prodType.toLowerCase() === "both" || 
+          prodType.toLowerCase() === finalBillType.toLowerCase();
+
+        if (!isAllowed) {
           throw new Error(
             `Product '${product.name}' is of type '${prodType}' and cannot be added to a '${finalBillType}' bill.`,
           );
@@ -386,7 +412,8 @@ exports.updateBill = async (req, res) => {
             `Insufficient stock for product '${product.name}'. Available: ${product.stock}, Requested: ${item.quantity}`,
           );
         }
-        const lineTotal = product.price * item.quantity;
+        const price = finalBillType === "wholesale" ? product.wholesalePrice : product.retailPrice;
+        const lineTotal = price * item.quantity;
         totalAmount += lineTotal;
         billItems.push({
           product: product._id,
@@ -474,9 +501,9 @@ exports.updateBill = async (req, res) => {
 
       const populatedBill = await Bill.findById(bill._id)
         .populate("accountant", "name")
-        .populate("products.product", "name price productType");
+        .populate("products.product", "name price retailPrice wholesalePrice productType");
 
-      res.json(populatedBill);
+      res.json(mapBillProductsPrice(populatedBill));
     } catch (error) {
       // Revert stock to original values by re-deducting them
       for (const item of originalProducts) {
